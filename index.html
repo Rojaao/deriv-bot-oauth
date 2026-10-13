@@ -3,233 +3,93 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Deriv Digits Bot OAuth</title>
+  <title>Deriv Bot - Teste de Conexão</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="style.css">
 </head>
 <body class="bg-slate-950 text-slate-100 min-h-screen">
-  <div class="max-w-7xl mx-auto p-4">
-    <header class="bg-slate-900 border border-slate-800 rounded-2xl p-4 mb-4 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-      <div>
-        <h1 class="text-2xl font-bold text-cyan-400">Deriv Digits Bot</h1>
-        <p class="text-slate-400 text-sm">OAuth oficial + estratégia OVER 1 / UNDER 8</p>
-      </div>
-
-      <div class="flex flex-wrap items-center gap-2">
-        <button id="btn-oauth-login" class="px-4 py-2 rounded-xl bg-cyan-600 hover:bg-cyan-500 font-semibold">
-          Conectar com Deriv
-        </button>
-        <button id="btn-logout" class="px-4 py-2 rounded-xl bg-slate-700 hover:bg-slate-600 font-semibold" disabled>
-          Sair
-        </button>
-        <span id="connection-badge" class="px-3 py-2 rounded-xl bg-red-700 font-semibold text-sm">
-          DESCONECTADO
-        </span>
-      </div>
+  <div class="max-w-4xl mx-auto p-4">
+    <header class="bg-slate-900 border border-slate-800 rounded-2xl p-4 mb-4">
+      <h1 class="text-2xl font-bold text-cyan-400">Deriv Bot - Teste de Conexão</h1>
+      <p class="text-slate-400 text-sm">Primeiro vamos validar a conexão real com a Deriv.</p>
     </header>
 
-    <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
-      <!-- CONTROLES -->
-      <section class="bg-slate-900 border border-slate-800 rounded-2xl p-4 space-y-4">
-        <h2 class="text-lg font-bold text-cyan-400">Conexão e Controle</h2>
-
+    <section class="bg-slate-900 border border-slate-800 rounded-2xl p-4 mb-4">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div>
-          <label class="text-sm text-slate-300 block mb-1">Conta autorizada</label>
-          <select id="account-select" class="w-full bg-slate-800 border border-slate-700 rounded-xl p-2" disabled></select>
-        </div>
-
-        <div class="grid grid-cols-2 gap-2">
-          <div class="bg-slate-800 rounded-xl p-3">
-            <div class="text-xs text-slate-400">Tipo</div>
-            <div id="account-type" class="font-bold">-</div>
-          </div>
-          <div class="bg-slate-800 rounded-xl p-3">
-            <div class="text-xs text-slate-400">Saldo</div>
-            <div id="balance" class="font-bold text-emerald-400">-</div>
-          </div>
+          <label class="block text-sm text-slate-300 mb-1">API Token da Deriv</label>
+          <input
+            id="token"
+            type="password"
+            class="w-full bg-slate-800 border border-slate-700 rounded-xl p-3"
+            placeholder="Cole seu token aqui"
+          />
+          <p class="text-xs text-slate-500 mt-1">
+            O token não será salvo no GitHub. Ele só é usado na sua sessão.
+          </p>
         </div>
 
         <div>
-          <label class="text-sm text-slate-300 block mb-1">Ativo</label>
-          <select id="symbol" class="w-full bg-slate-800 border border-slate-700 rounded-xl p-2">
+          <label class="block text-sm text-slate-300 mb-1">Ativo</label>
+          <select id="symbol" class="w-full bg-slate-800 border border-slate-700 rounded-xl p-3">
             <option value="R_100">Volatility 100 Index</option>
             <option value="R_50">Volatility 50 Index</option>
             <option value="1HZ100V">Volatility 100 (1s) Index</option>
           </select>
         </div>
+      </div>
 
-        <div class="grid grid-cols-2 gap-2">
-          <div>
-            <label class="text-sm text-slate-300 block mb-1">Entrada inicial</label>
-            <input id="stake" type="number" min="0.35" step="0.01" value="0.35" class="w-full bg-slate-800 border border-slate-700 rounded-xl p-2">
-          </div>
-          <div>
-            <label class="text-sm text-slate-300 block mb-1">Estratégia inicial</label>
-            <select id="first-strategy" class="w-full bg-slate-800 border border-slate-700 rounded-xl p-2">
-              <option value="OVER1">OVER 1</option>
-              <option value="UNDER8">UNDER 8</option>
-            </select>
-          </div>
-        </div>
-
-        <div class="border-t border-slate-800 pt-3 space-y-2">
-          <div class="flex items-center justify-between">
-            <h3 class="font-semibold text-slate-200">Martingale</h3>
-            <input id="use-martingale" type="checkbox" class="w-4 h-4" />
-          </div>
-
-          <div class="grid grid-cols-2 gap-2">
-            <div>
-              <label class="text-sm text-slate-300 block mb-1">Multiplicador</label>
-              <input id="mg-multiplier" type="number" min="1" step="0.1" value="2" class="w-full bg-slate-800 border border-slate-700 rounded-xl p-2">
-            </div>
-            <div>
-              <label class="text-sm text-slate-300 block mb-1">Máx. níveis</label>
-              <input id="mg-max-steps" type="number" min="0" step="1" value="3" class="w-full bg-slate-800 border border-slate-700 rounded-xl p-2">
-            </div>
-          </div>
-        </div>
-
-        <div class="border-t border-slate-800 pt-3 space-y-2">
-          <h3 class="font-semibold text-slate-200">Risco</h3>
-          <div class="grid grid-cols-2 gap-2">
-            <div>
-              <label class="text-sm text-slate-300 block mb-1">Take Profit</label>
-              <input id="take-profit" type="number" step="0.01" value="5.00" class="w-full bg-slate-800 border border-slate-700 rounded-xl p-2">
-            </div>
-            <div>
-              <label class="text-sm text-slate-300 block mb-1">Stop Loss</label>
-              <input id="stop-loss" type="number" step="0.01" value="10.00" class="w-full bg-slate-800 border border-slate-700 rounded-xl p-2">
-            </div>
-            <div>
-              <label class="text-sm text-slate-300 block mb-1">Máx. operações</label>
-              <input id="max-trades" type="number" step="1" value="50" class="w-full bg-slate-800 border border-slate-700 rounded-xl p-2">
-            </div>
-            <div>
-              <label class="text-sm text-slate-300 block mb-1">Máx. perdas seguidas</label>
-              <input id="max-consec-losses" type="number" step="1" value="5" class="w-full bg-slate-800 border border-slate-700 rounded-xl p-2">
-            </div>
-            <div>
-              <label class="text-sm text-slate-300 block mb-1">Máx. por entrada</label>
-              <input id="max-stake" type="number" step="0.01" value="20.00" class="w-full bg-slate-800 border border-slate-700 rounded-xl p-2">
-            </div>
-            <div>
-              <label class="text-sm text-slate-300 block mb-1">Saldo mínimo</label>
-              <input id="min-balance" type="number" step="0.01" value="1.00" class="w-full bg-slate-800 border border-slate-700 rounded-xl p-2">
-            </div>
-          </div>
-        </div>
-
-        <div class="grid grid-cols-2 gap-2 pt-2">
-          <button id="btn-start" class="px-4 py-3 rounded-xl bg-emerald-600 hover:bg-emerald-500 font-semibold" disabled>INICIAR</button>
-          <button id="btn-pause" class="px-4 py-3 rounded-xl bg-amber-600 hover:bg-amber-500 font-semibold" disabled>PAUSAR</button>
-          <button id="btn-resume" class="px-4 py-3 rounded-xl bg-blue-600 hover:bg-blue-500 font-semibold" disabled>RETOMAR</button>
-          <button id="btn-stop" class="px-4 py-3 rounded-xl bg-rose-700 hover:bg-rose-600 font-semibold" disabled>PARAR</button>
-        </div>
-
-        <button id="btn-emergency" class="w-full px-4 py-3 rounded-xl bg-red-600 hover:bg-red-500 font-bold">
-          PARADA DE EMERGÊNCIA
+      <div class="flex flex-wrap gap-2 mt-4">
+        <button id="btn-connect" class="px-4 py-3 rounded-xl bg-cyan-600 hover:bg-cyan-500 font-semibold">
+          Conectar
         </button>
-      </section>
+        <button id="btn-disconnect" class="px-4 py-3 rounded-xl bg-rose-700 hover:bg-rose-600 font-semibold" disabled>
+          Desconectar
+        </button>
+      </div>
+    </section>
 
-      <!-- ANÁLISE -->
-      <section class="lg:col-span-2 bg-slate-900 border border-slate-800 rounded-2xl p-4 space-y-4">
-        <div class="grid grid-cols-1 md:grid-cols-4 gap-3">
-          <div class="bg-slate-800 rounded-xl p-3">
-            <div class="text-xs text-slate-400">Estado</div>
-            <div id="bot-state" class="font-bold text-cyan-400">PARADO</div>
-          </div>
-          <div class="bg-slate-800 rounded-xl p-3">
-            <div class="text-xs text-slate-400">Estratégia da vez</div>
-            <div id="current-strategy" class="font-bold text-fuchsia-400">-</div>
-          </div>
-          <div class="bg-slate-800 rounded-xl p-3">
-            <div class="text-xs text-slate-400">Entrada atual</div>
-            <div id="current-stake-display" class="font-bold text-amber-300">-</div>
-          </div>
-          <div class="bg-slate-800 rounded-xl p-3">
-            <div class="text-xs text-slate-400">Nível MG</div>
-            <div id="mg-level-display" class="font-bold">0</div>
-          </div>
-        </div>
+    <section class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-4">
+      <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4">
+        <div class="text-xs text-slate-400">Status</div>
+        <div id="status" class="font-bold text-red-400">DESCONECTADO</div>
+      </div>
+      <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4">
+        <div class="text-xs text-slate-400">Conta</div>
+        <div id="loginid" class="font-bold">-</div>
+      </div>
+      <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4">
+        <div class="text-xs text-slate-400">Tipo</div>
+        <div id="account-type" class="font-bold">-</div>
+      </div>
+      <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4">
+        <div class="text-xs text-slate-400">Saldo</div>
+        <div id="balance" class="font-bold text-emerald-400">-</div>
+      </div>
+    </section>
 
+    <section class="bg-slate-900 border border-slate-800 rounded-2xl p-4 mb-4">
+      <div class="text-sm text-slate-400 mb-2">Último tick</div>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
         <div class="bg-slate-800 rounded-xl p-4">
-          <div class="text-sm text-slate-400 mb-2">Motivo / status da entrada</div>
-          <div id="reason-box" class="font-medium text-slate-100">Aguardando login.</div>
+          <div class="text-xs text-slate-400">Cotação</div>
+          <div id="last-quote" class="font-bold text-lg">-</div>
         </div>
-
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
-          <div class="bg-slate-800 rounded-xl p-4">
-            <h3 class="font-semibold mb-3 text-cyan-300">Janela 50</h3>
-            <div class="space-y-1 text-sm">
-              <div class="flex justify-between"><span>0 e 1</span><strong id="count-50-low">0</strong></div>
-              <div class="flex justify-between"><span>8 e 9</span><strong id="count-50-high">0</strong></div>
-              <div class="flex justify-between"><span>% 0/1</span><strong id="pct-50-low">0%</strong></div>
-              <div class="flex justify-between"><span>% 8/9</span><strong id="pct-50-high">0%</strong></div>
-              <div class="flex justify-between"><span>Condição OVER 1</span><strong id="cond-over-50">NÃO</strong></div>
-              <div class="flex justify-between"><span>Condição UNDER 8</span><strong id="cond-under-50">NÃO</strong></div>
-            </div>
-          </div>
-
-          <div class="bg-slate-800 rounded-xl p-4">
-            <h3 class="font-semibold mb-3 text-cyan-300">Janela 10</h3>
-            <div class="space-y-1 text-sm">
-              <div class="flex justify-between"><span>0 e 1</span><strong id="count-10-low">0</strong></div>
-              <div class="flex justify-between"><span>8 e 9</span><strong id="count-10-high">0</strong></div>
-              <div class="flex justify-between"><span>Condição OVER 1</span><strong id="cond-over-10">NÃO</strong></div>
-              <div class="flex justify-between"><span>Condição UNDER 8</span><strong id="cond-under-10">NÃO</strong></div>
-            </div>
-          </div>
-        </div>
-
         <div class="bg-slate-800 rounded-xl p-4">
-          <div class="text-sm text-slate-400 mb-2">Últimos 50 dígitos</div>
-          <div id="digit-stream" class="min-h-[88px] flex flex-wrap gap-1"></div>
+          <div class="text-xs text-slate-400">Último dígito</div>
+          <div id="last-digit" class="font-bold text-2xl text-amber-300">-</div>
         </div>
-
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
-          <div class="bg-slate-800 rounded-xl p-4">
-            <h3 class="font-semibold mb-3 text-cyan-300">Estatísticas da sessão</h3>
-            <div class="space-y-1 text-sm">
-              <div class="flex justify-between"><span>Total</span><strong id="stat-total">0</strong></div>
-              <div class="flex justify-between"><span>Wins</span><strong id="stat-win">0</strong></div>
-              <div class="flex justify-between"><span>Losses</span><strong id="stat-loss">0</strong></div>
-              <div class="flex justify-between"><span>Acerto</span><strong id="stat-rate">0%</strong></div>
-              <div class="flex justify-between"><span>Lucro líquido</span><strong id="stat-profit">0.00</strong></div>
-              <div class="flex justify-between"><span>Maior sequência perdas</span><strong id="stat-max-loss-streak">0</strong></div>
-              <div class="flex justify-between"><span>Maior entrada</span><strong id="stat-max-stake-used">0.00</strong></div>
-              <div class="flex justify-between"><span>Saldo inicial</span><strong id="stat-balance-start">-</strong></div>
-              <div class="flex justify-between"><span>Saldo atual</span><strong id="stat-balance-current">-</strong></div>
-            </div>
-          </div>
-
-          <div class="bg-slate-800 rounded-xl p-4">
-            <h3 class="font-semibold mb-3 text-cyan-300">Log</h3>
-            <div id="log-box" class="h-64 overflow-y-auto bg-slate-950 border border-slate-700 rounded-xl p-3 text-xs font-mono space-y-1"></div>
-          </div>
-        </div>
-
         <div class="bg-slate-800 rounded-xl p-4">
-          <h3 class="font-semibold mb-3 text-cyan-300">Histórico</h3>
-          <div class="overflow-auto">
-            <table class="w-full text-sm">
-              <thead class="text-slate-400">
-                <tr>
-                  <th class="text-left py-2">Hora</th>
-                  <th class="text-left py-2">Conta</th>
-                  <th class="text-left py-2">Ativo</th>
-                  <th class="text-left py-2">Estratégia</th>
-                  <th class="text-left py-2">Entrada</th>
-                  <th class="text-left py-2">Resultado</th>
-                  <th class="text-left py-2">Lucro</th>
-                </tr>
-              </thead>
-              <tbody id="history-body"></tbody>
-            </table>
-          </div>
+          <div class="text-xs text-slate-400">Ativo atual</div>
+          <div id="active-symbol" class="font-bold">-</div>
         </div>
-      </section>
-    </div>
+      </div>
+    </section>
+
+    <section class="bg-slate-900 border border-slate-800 rounded-2xl p-4">
+      <div class="text-sm text-slate-400 mb-2">Log</div>
+      <div id="log-box" class="h-72 overflow-y-auto bg-slate-950 border border-slate-700 rounded-xl p-3 text-xs font-mono space-y-1"></div>
+    </section>
   </div>
 
   <script src="config.js"></script>
