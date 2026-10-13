@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Autorizando Deriv...</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-slate-950 text-slate-100 min-h-screen flex items-center justify-center p-6">
+  <div class="max-w-xl w-full bg-slate-900 border border-slate-800 rounded-2xl p-6">
+    <h1 class="text-xl font-bold text-cyan-400 mb-3">Conectando sua conta Deriv...</h1>
+    <div id="status" class="text-slate-300 text-sm">Processando autorização OAuth...</div>
+  </div>
+
+  <script>
+    function mergeParams() {
+      const merged = new URLSearchParams();
+
+      const search = new URLSearchParams(window.location.search);
+      for (const [k, v] of search.entries()) merged.set(k, v);
+
+      const hash = window.location.hash.startsWith('#')
+        ? window.location.hash.slice(1)
+        : window.location.hash;
+      const hashParams = new URLSearchParams(hash);
+      for (const [k, v] of hashParams.entries()) merged.set(k, v);
+
+      return merged;
+    }
+
+    function collectAccounts(params) {
+      const accounts = [];
+      const indexes = new Set();
+
+      for (const key of params.keys()) {
+        const m = key.match(/(?:acct|account|token|cur)(\d+)/i);
+        if (m) indexes.add(m[1]);
+      }
+
+      const sorted = [...indexes].sort((a, b) => Number(a) - Number(b));
+
+      for (const idx of sorted) {
+        const loginid = params.get(`acct${idx}`) || params.get(`account${idx}`);
+        const token = params.get(`token${idx}`);
+        const currency = params.get(`cur${idx}`) || '';
+        if (loginid && token) {
+          accounts.push({ loginid, token, currency });
+        }
+      }
+
+      if (!accounts.length) {
+        const loginid = params.get('acct') || params.get('account');
+        const token = params.get('token');
+        const currency = params.get('cur') || '';
+        if (loginid && token) accounts.push({ loginid, token, currency });
+      }
+
+      return accounts;
+    }
+
+    (function init() {
+      const status = document.getElementById('status');
+      try {
+        const params = mergeParams();
+
+        if (params.get('error') || params.get('error_description')) {
+          status.textContent = `Erro OAuth: ${params.get('error_description') || params.get('error')}`;
+          return;
+        }
+
+        const returnedState = params.get('state');
+        const expectedState = sessionStorage.getItem('deriv_oauth_expected_state');
+
+        if (expectedState && returnedState && expectedState !== returnedState) {
+          status.textContent = 'Falha de segurança: state OAuth não confere.';
+          return;
+        }
+
+        const accounts = collectAccounts(params);
+
+        if (!accounts.length) {
+          status.textContent = 'A Deriv não retornou contas/tokens OAuth utilizáveis. Verifique o app e o redirect URL.';
+          return;
+        }
+
+        sessionStorage.setItem('deriv_oauth_session', JSON.stringify({
+          createdAt: Date.now(),
+          accounts
+        }));
+
+        sessionStorage.removeItem('deriv_oauth_expected_state');
+
+        status.textContent = 'Autorização concluída. Redirecionando...';
+
+        setTimeout(() => {
+          window.location.replace('index.html');
+        }, 800);
+      } catch (err) {
+        status.textContent = `Erro ao processar callback: ${err.message}`;
+      }
+    })();
+  </script>
+</body>
+</html>
