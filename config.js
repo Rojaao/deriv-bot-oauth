@@ -1,5 +1,5 @@
 window.DERIV_CONFIG = {
-  OAUTH_APP_ID: "COLE_AQUI_O_APP_ID_EXATO_COPIADO_DA_DERIV",
+  OAUTH_APP_ID: "34Fk4vv6JslPFedrTWDNY",
   WS_APP_ID: "34Fk4vv6JslPFedrTWDNY",
   REDIRECT_URI: "https://rojaao.github.io/deriv-bot-oauth/callback.html",
   OAUTH_AUTHORIZE_URL: "https://oauth.deriv.com/oauth2/authorize",
